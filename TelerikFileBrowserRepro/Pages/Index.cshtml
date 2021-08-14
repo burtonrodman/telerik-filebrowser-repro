@@ -1,0 +1,57 @@
+﻿@page
+@model TelerikFileBrowserRepro.Pages.IndexModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Kendo.Mvc
+@using Kendo.Mvc.UI
+
+<div class="row">
+    <div class="col-xl-12">
+
+        <div class="demo-section wide">
+            <div class="demo-inner-section">
+                <h4>Article</h4>
+                <form method="post" id="updateForm" asp-antiforgery="true">
+                    <div class="panel-content">
+                        <div class="frame-wrap">
+                            <div style="padding: 5px">
+                                <div asp-validation-summary="ModelOnly"
+                                    class="text-danger"></div>
+                                <label>Content:</label><br />
+
+                                @(Html.Kendo().Editor()
+                                    .Name("editor")
+                                    .HtmlAttributes(new { style = "height:470px", aria_label = "editor" })
+                                    .Tools(tools => tools
+                                    .Clear()
+                                    .InsertFile()
+                                    )
+                                    .FileBrowser(
+                                    fileBrowser => fileBrowser
+                                        .Transport(transport =>
+                                        {
+                                        transport.Read(r => r.Url($"/api/docupload/read"));
+                                        transport.UploadUrl($"/api/docupload/uploadurl");
+                                        }
+                                        )
+                                        .Schema(schema => schema.Model(
+                                            model => model.Fields(fields => fields
+                                                .Name(name => name.Field("Name"))
+                                                .Size(size => size.Field("Size"))
+                                                .Type(type => type.Field("EntryType"))
+                                                )
+                                            )
+                                        )
+                                    )
+                                    .Value("Telerik File Browser Repro Project<br/>Upload a file... after uploaded, it's name should be SERVERGENERATED.<br/>notice response from /api/docupload/uploadurl contains the new name.")
+                                )
+
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary"
+                        asp-page-handler="SaveArticle">Save Article</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
